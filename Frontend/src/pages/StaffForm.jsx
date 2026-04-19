@@ -15,6 +15,7 @@ function StaffForm() {
     phone: '',
     specialty: '',
     experience_years: '',
+    workload: '',
     availability: 'available',
   });
 
@@ -45,6 +46,7 @@ function StaffForm() {
         phone: staff.phone,
         specialty: staff.specialty,
         experience_years: staff.experience_years,
+        workload: staff.workload || 0,
         availability: staff.availability,
       });
     } catch (err) {
@@ -73,7 +75,10 @@ function StaffForm() {
         await staffService.update(id, formData);
         setSuccess('Staff member updated successfully!');
       } else {
-        await staffService.create(formData);
+        // Exclude workload for creation (backend sets it to 0)
+        const createData = { ...formData };
+        delete createData.workload;
+        await staffService.create(createData);
         setSuccess('Staff member created successfully!');
       }
       setTimeout(() => navigate('/staff'), 1500);
@@ -168,6 +173,21 @@ function StaffForm() {
                 min="0"
               />
             </div>
+            {id && (
+              <div className="form-group">
+                <label>Workload</label>
+                <input
+                  type="number"
+                  name="workload"
+                  value={formData.workload}
+                  onChange={handleChange}
+                  min="0"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="form-row">
             <div className="form-group">
               <label>Availability *</label>
               <select
